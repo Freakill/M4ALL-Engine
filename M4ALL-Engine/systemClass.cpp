@@ -47,14 +47,17 @@ bool SystemClass::setup(int width, int height)
 		return false;
 	}
 
-	if(MessageBox(NULL, L"Do you want to launch application at full screen?", L"Full Screen", MB_ICONINFORMATION | MB_OKCANCEL) != IDCANCEL)
+	// Ask at the beginning of the program whether the user wants the application to work in full screen or not. For debug purposes we leave it always in false
+	/*if(MessageBox(NULL, L"Do you want to launch application at full screen?", L"Full Screen", MB_ICONINFORMATION | MB_OKCANCEL) != IDCANCEL)
 	{
 		fullscreen_ = true;
 	}
 	else
 	{
 		fullscreen_ = false;
-	}
+	}*/
+
+	fullscreen_ = false;	
 
 	if(fullscreen_)
 	{
