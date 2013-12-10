@@ -23,7 +23,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, //The handle of the application's curre
 
 	// When done, destroy the system object and release.
 	system->destroy();
-	delete System;
+	delete system;
 	system = 0;
 
 	return 0;
