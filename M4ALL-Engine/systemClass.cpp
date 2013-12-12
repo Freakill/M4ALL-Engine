@@ -4,6 +4,7 @@ SystemClass::SystemClass()
 {
 	// Initializing objects at 0 for control
 	inputManager_ = 0;
+	appManager_ = 0;
 }
 
 SystemClass::SystemClass(const SystemClass& other)
@@ -129,6 +130,18 @@ bool SystemClass::setup(int width, int height)
 	}
 	inputManager_->setup();
 
+	// Initialize the Application Manager
+	appManager_ = new ApplicationManager;
+	if(!appManager_)
+	{
+		return false;
+	}
+	if(!appManager_->setup(windowHandler_, width, height, fullscreen_))
+	{
+		return false;
+	}
+
+	// Initialize the listeners for input
 	inputManager_->AddListener(*this);
 
 	return true;
@@ -140,7 +153,8 @@ void SystemClass::run()
 	{
 		processEvents(); //Process any window events
 
-		
+		appManager_->update();
+		appManager_->draw();
 
 		swapBuffers();
 	}

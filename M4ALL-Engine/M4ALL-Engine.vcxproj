@@ -74,15 +74,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="applicationManager.cpp" />
+    <ClCompile Include="applicationState.cpp" />
     <ClCompile Include="inputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="systemClass.cpp" />
+    <ClCompile Include="introScreenState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="applicationManager.h" />
+    <ClInclude Include="applicationState.h" />
     <ClInclude Include="inputManager.h" />
     <ClInclude Include="listenerClass.h" />
     <ClInclude Include="notifierClass.h" />
     <ClInclude Include="systemClass.h" />
+    <ClInclude Include="introScreenState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
