@@ -6,7 +6,11 @@
 
 #include <windows.h>
 
-class SystemClass
+#include "inputManager.h"
+
+#include "listenerClass.h"
+
+class SystemClass : public Listener<InputManager, int>
 {
 	public:
 		SystemClass();
@@ -27,6 +31,10 @@ class SystemClass
 
 	private:
 		void setupPixelFormat(void);
+		
+		virtual void Notify(InputManager* notifier, int arg){
+			MessageBoxA(NULL, "Key just pressed", "SystemClass", MB_OK);
+		}
 
 		bool isRunning_;
 		bool fullscreen_;
@@ -41,6 +49,8 @@ class SystemClass
 		DWORD windowExtendedStyle_; //Window Extended Style
 		DWORD windowStyle_; //Window Style
 		DEVMODE deviceModeSettings_;
+
+		InputManager* inputManager_;
 };
 
 #endif //_SYSTEM_CLASS_H_

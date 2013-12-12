@@ -16,7 +16,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, //The handle of the application's curre
 	}
 
 	// Initialize and run the system object.
-	if(system->setup())
+	if(system->setup(600, 400))
 	{
 		system->run();
 	}

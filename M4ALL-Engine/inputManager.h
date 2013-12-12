@@ -6,7 +6,9 @@
 #include <string>
 #include <sstream>
 
-class InputManager
+#include "notifierClass.h"
+
+class InputManager : public Notifier<InputManager, int>
 {
 public:
 	InputManager();

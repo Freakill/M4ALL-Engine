@@ -2,7 +2,8 @@
 
 SystemClass::SystemClass()
 {
-	
+	// Initializing objects at 0 for control
+	inputManager_ = 0;
 }
 
 SystemClass::SystemClass(const SystemClass& other)
@@ -64,7 +65,7 @@ bool SystemClass::setup(int width, int height)
 		memset(&deviceModeSettings_, 0, sizeof(deviceModeSettings_));
 		deviceModeSettings_.dmSize = sizeof(deviceModeSettings_);
 
-		deviceModeSettings_.dmPelsWidth	= width;	// Setting device mode width to specified width
+		deviceModeSettings_.dmPelsWidth	    = width;	// Setting device mode width to specified width
 		deviceModeSettings_.dmPelsHeight	= height;	// Setting device mode height to specified height
 		deviceModeSettings_.dmBitsPerPel	= 16;		// Setting device bits per pixel
 		deviceModeSettings_.dmFields		= DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
@@ -112,12 +113,23 @@ bool SystemClass::setup(int width, int height)
         this													// Additional application data
         );
 
-    if (windowHandler_ == NULL)
+    if(windowHandler_ == NULL)
+	{
 		return false;
+	}
 
 	ShowWindow(windowHandler_, SW_SHOW);
 	UpdateWindow(windowHandler_); // update the window
 	SetFocus(windowHandler_);
+
+	inputManager_ = new InputManager;
+	if(!inputManager_)
+	{
+		return false;
+	}
+	inputManager_->setup();
+
+	inputManager_->AddListener(*this);
 
 	return true;
 }
@@ -139,6 +151,12 @@ void SystemClass::run()
 
 void SystemClass::destroy()
 {
+	if(inputManager_)
+	{
+		delete inputManager_;
+		inputManager_ = 0;
+	}
+
 	// Show the mouse cursor.
 	ShowCursor(true);
 
@@ -263,18 +281,21 @@ LRESULT SystemClass::WindowProcess(HWND windowHandler, UINT messageCode, WPARAM 
 					}
 					else
 					{
-						
+						inputManager_->keyDown((unsigned int)wAdditionalData);
+						return 0;
 					}
 				}
 				break;
 				default:
-					
+					inputManager_->keyDown((unsigned int)wAdditionalData);
+					return 0;
 					break;
 			}
 		}
 		case WM_KEYUP:
 		{
-			
+			inputManager_->keyUp((unsigned int)wAdditionalData);
+			return 0;
 		}
 		break;
 		default:

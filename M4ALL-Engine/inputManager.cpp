@@ -28,6 +28,10 @@ void InputManager::setup()
 
 void InputManager::keyDown(unsigned int input)
 {
+	if(!keys_[input]){
+		NotifyListeners((int)input);
+	}
+
 	// If a key is pressed then save that state in the key array.
 	keys_[input] = true;
 	return;

@@ -75,9 +75,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="inputManager.cpp" />
-    <ClCompile Include="listenerClass.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="notifierClass.cpp" />
     <ClCompile Include="systemClass.cpp" />
   </ItemGroup>
   <ItemGroup>
