@@ -191,6 +191,28 @@ void SystemClass::destroy()
 	instanceHandler_ = NULL;
 }
 
+void SystemClass::Notify(InputManager* notifier, int arg)
+{
+		switch(arg){
+			case 27:
+			{
+				if(MessageBox(windowHandler_, (LPCWSTR)L"Really quit?", (LPCWSTR)L"My application", MB_OKCANCEL) == IDOK)
+				{
+					isRunning_ = false;
+				}
+				inputManager_->keyUp(arg);
+			}
+			break;
+			default:
+			{
+				std::stringstream keyStream;
+				keyStream << "Key pressed " << arg << " has no behaviour attached";
+				MessageBoxA(NULL, keyStream.str().c_str(), "SystemClass", MB_OK);
+			}
+			break;
+		}
+	}
+
 void SystemClass::processEvents()
 {
     MSG msg;

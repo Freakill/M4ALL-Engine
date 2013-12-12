@@ -76,6 +76,7 @@
   <ItemGroup>
     <ClCompile Include="applicationManager.cpp" />
     <ClCompile Include="applicationState.cpp" />
+    <ClCompile Include="graphicsmanager.cpp" />
     <ClCompile Include="inputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="systemClass.cpp" />
@@ -84,6 +85,7 @@
   <ItemGroup>
     <ClInclude Include="applicationManager.h" />
     <ClInclude Include="applicationState.h" />
+    <ClInclude Include="graphicsManager.h" />
     <ClInclude Include="inputManager.h" />
     <ClInclude Include="listenerClass.h" />
     <ClInclude Include="notifierClass.h" />

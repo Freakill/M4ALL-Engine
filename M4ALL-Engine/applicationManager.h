@@ -3,6 +3,8 @@
 
 #include <windows.h>
 
+#include "graphicsManager.h"
+
 class ApplicationState;
 
 class ApplicationManager
@@ -20,6 +22,8 @@ class ApplicationManager
 
 	private:
 		ApplicationState* appState_;
+
+		GraphicsManager* graphicsManager_;
 
 		HWND windowHandler_;
 };
