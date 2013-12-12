@@ -145,6 +145,8 @@ void SystemClass::run()
 		swapBuffers();
 	}
 
+	exit(0);
+
 	return;
 
 }
@@ -242,10 +244,10 @@ LRESULT SystemClass::WindowProcess(HWND windowHandler, UINT messageCode, WPARAM 
 		break;
 		case WM_CLOSE:
 		{
-			if (MessageBox(windowHandler, (LPCWSTR)L"Really quit?", (LPCWSTR)L"My application", MB_OKCANCEL) == IDOK)
-				DestroyWindow(windowHandler);
-			else
-				return 0;
+			//if (MessageBox(windowHandler, (LPCWSTR)L"Really quit?", (LPCWSTR)L"My application", MB_OKCANCEL) == IDOK)
+			DestroyWindow(windowHandler);
+			//else
+			//	return 0;
 		}
 		break;
 		case WM_DESTROY:
@@ -267,31 +269,14 @@ LRESULT SystemClass::WindowProcess(HWND windowHandler, UINT messageCode, WPARAM 
 
 			// Respond to the message:
 			onResize(width, height);
-		}*/
-		break;
+		}
+		break;*/
 		case WM_KEYDOWN:
 		{
-			switch(wAdditionalData) 
-			{
-				case(VK_ESCAPE): //If the escape key was pressed
-				{
-					if (MessageBox(windowHandler, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
-					{
-						DestroyWindow(windowHandler);
-					}
-					else
-					{
-						inputManager_->keyDown((unsigned int)wAdditionalData);
-						return 0;
-					}
-				}
-				break;
-				default:
-					inputManager_->keyDown((unsigned int)wAdditionalData);
-					return 0;
-					break;
-			}
+			inputManager_->keyDown((unsigned int)wAdditionalData);
+			return 0;
 		}
+		break;
 		case WM_KEYUP:
 		{
 			inputManager_->keyUp((unsigned int)wAdditionalData);

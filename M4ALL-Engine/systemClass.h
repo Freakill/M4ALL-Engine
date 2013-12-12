@@ -6,6 +6,10 @@
 
 #include <windows.h>
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #include "inputManager.h"
 
 #include "listenerClass.h"
@@ -33,7 +37,13 @@ class SystemClass : public Listener<InputManager, int>
 		void setupPixelFormat(void);
 		
 		virtual void Notify(InputManager* notifier, int arg){
-			MessageBoxA(NULL, "Key just pressed", "SystemClass", MB_OK);
+			std::stringstream keyStream;
+			keyStream << "Key pressed " << arg;
+			//MessageBoxA(NULL, keyStream.str().c_str(), "SystemClass", MB_OK);
+			if(arg == 27){
+				if(MessageBox(windowHandler_, (LPCWSTR)L"Really quit?", (LPCWSTR)L"My application", MB_OKCANCEL) == IDOK)
+					isRunning_ = false;
+			}
 		}
 
 		bool isRunning_;
