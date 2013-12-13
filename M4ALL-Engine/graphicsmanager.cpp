@@ -13,6 +13,9 @@ GraphicsManager::GraphicsManager()
 	depthDisabledStencilState_ = 0;
 	alphaEnableBlendingState_ = 0;
 	alphaDisableBlendingState_ = 0;
+
+	shader2D_ = 0;
+	shader3D_ = 0;
 }
 
 GraphicsManager::GraphicsManager(const GraphicsManager& other)
@@ -53,7 +56,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if(FAILED(result))
 	{
-		MessageBox(NULL, L"Cannot create DirectX factory.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot create DirectX factory.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -68,7 +71,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 		result = adapterTemp->GetDesc(&adapterDescriptionTemp);
 		if(FAILED(result))
 		{
-			MessageBox(NULL, L"Cannot get adapter description.", L"Error", MB_ICONINFORMATION | MB_OK);
+			MessageBoxA(NULL, "Cannot get adapter description.", "Error", MB_ICONERROR | MB_OK);
 			return false;
 		}
 
@@ -96,7 +99,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	result = factory->EnumAdapters(bestAdapter, &adapter);
 	if(FAILED(result))
 	{
-		MessageBox(NULL, L"Cannot enumerate graphic interfaces.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot enumerate graphic interfaces.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -104,7 +107,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	if(FAILED(result))
 	{
-		MessageBox(NULL, L"Cannot enumerate primary adapter.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot enumerate primary adapter.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -112,7 +115,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModesDisplay, NULL);
 	if(FAILED(result))
 	{
-		MessageBox(NULL, L"Cannot get the number of modes that fit DXGI_FORMAT_R8G8B8A8_UNORM display format.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot get the number of modes that fit DXGI_FORMAT_R8G8B8A8_UNORM display format.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -120,7 +123,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	displayModeList = new DXGI_MODE_DESC[numModesDisplay];
 	if(!displayModeList)
 	{
-		MessageBox(NULL, L"Cannot list all possible display modes.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot list all possible display modes.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -128,7 +131,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModesDisplay, displayModeList);
 	if(FAILED(result))
 	{
-		MessageBox(NULL, L"Cannot fill the display mode list.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot fill the display mode list.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -150,7 +153,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	result = adapter->GetDesc(&adapterDescription);
 	if(FAILED(result))
 	{
-		MessageBox(NULL, L"Cannot get adapter description.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot get adapter description.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -161,7 +164,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	error = wcstombs_s(&stringLength, videoCardDescription_, 128, adapterDescription.Description, 128);
 	if(error != 0)
 	{
-		MessageBox(NULL, L"Cannot convert adapter name to character array.", L"Error", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Cannot convert adapter name to character array.", "Error", MB_ICONERROR | MB_OK);
 		return false;
 	}
 
@@ -244,7 +247,7 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 										   D3D11_SDK_VERSION, &swapChainDescription, &swapChain_, &dx11Device_, NULL, &dx11DeviceContext_);
 	if(FAILED(result)) // If computer does not support DX11
 	{
-		MessageBox(NULL, L"Falling back to CPU mode.", L"Info", MB_ICONINFORMATION | MB_OK);
+		MessageBoxA(NULL, "Falling back to CPU mode.", "Info", MB_ICONINFORMATION | MB_OK);
 
 		result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_REFERENCE, NULL, 0, &featureLevel, 1, // Create CPU compatibility
 										       D3D11_SDK_VERSION, &swapChainDescription, &swapChain_, &dx11Device_, NULL, &dx11DeviceContext_);
@@ -450,11 +453,34 @@ bool GraphicsManager::setup(int width, int height, bool vsync, HWND windowHandle
 	// Create an orthographic projection matrix for 2D rendering.
 	D3DXMatrixOrthoLH(&orthoMatrix_, (float)width, (float)height, screenNearPlane, screenDepthPlane);
 
+	// We call the function to setup the shaders
+	if(!setupShaders(windowHandler))
+	{
+		MessageBoxA(windowHandler, "Could not setup shaders.", "Error", MB_ICONERROR | MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
 void GraphicsManager::destroy()
 {
+	// Release the 2D shader object.
+	if(shader2D_)
+	{
+		shader2D_->destroy();
+		delete shader2D_;
+		shader2D_ = 0;
+	}
+
+	// Release the 3D shader object.
+	if(shader3D_)
+	{
+		shader3D_->destroy();
+		delete shader3D_;
+		shader3D_ = 0;
+	}
+
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
 	if(swapChain_)
 	{
@@ -529,7 +555,50 @@ void GraphicsManager::destroy()
 
 	return;
 }
+
+bool GraphicsManager::setupShaders(HWND windowHandler)
+{
+	// Create the image shader object.
+	shader2D_ = new Shader2DClass;
+	if(!shader2D_)
+	{
+		return false;
+	}
+
+	// Initialize the color shader object.
+	if(!shader2D_->setup(dx11Device_, windowHandler))
+	{
+		MessageBoxA(NULL, "Could not initialize the 2D shader object.", "Error", MB_ICONERROR | MB_OK);
+		return false;
+	}
+
+	// Create the 3D shader object.
+	shader3D_ = new Shader3DClass;
+	if(!shader3D_)
+	{
+		return false;
+	}
+
+	// Initialize the color shader object.
+	if(!shader3D_->setup(dx11Device_, windowHandler))
+	{
+		MessageBoxA(NULL, "Could not initialize the 3D shader object.", "Error", MB_ICONERROR | MB_OK);
+		return false;
+	}
+
+	return true;
+}
+
+void GraphicsManager::draw2D(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX orthoMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 color)
+{
+	shader2D_->draw(dx11DeviceContext_, indexCount, worldMatrix, viewMatrix, orthoMatrix, texture, color);
+}
+
+void GraphicsManager::draw3D()
+{
 	
+}
+
 void GraphicsManager::beginDraw(float red, float green, float blue, float alpha)
 {
 	float color[4];

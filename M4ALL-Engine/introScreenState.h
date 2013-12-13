@@ -5,20 +5,25 @@
 
 #include <mmsystem.h>
 
-class IntroScreenState: public ApplicationState
+class IntroScreenState : public ApplicationState
 {
 	public:
 		IntroScreenState();
 		virtual ~IntroScreenState();
 		static IntroScreenState* Instance();
 
-		virtual bool setup(ApplicationManager* appManager, HWND windowHandler);
-		virtual void update(ApplicationManager* appManager, float elapsedTime);
-		virtual void draw(ApplicationManager* appManager);
+		virtual bool setup(ApplicationManager* appManager, GraphicsManager* graphicsManager, InputManager * inputManager, HWND windowHandler);
+		virtual void update(float elapsedTime);
+		virtual void draw();
 		virtual void destroy();
 
 	private:
 		static IntroScreenState introScreenState_; //singleton
+
+		virtual void Notify(InputManager* notifier, int arg);
+
+		CameraClass*	camera_;
+		ImageClass*		background_;
 };
 
 #endif //_INTRO_SCREEN_STATE_H_

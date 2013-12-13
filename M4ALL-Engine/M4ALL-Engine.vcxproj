@@ -76,21 +76,33 @@
   <ItemGroup>
     <ClCompile Include="applicationManager.cpp" />
     <ClCompile Include="applicationState.cpp" />
+    <ClCompile Include="cameraClass.cpp" />
+    <ClCompile Include="firstScreenState.cpp" />
     <ClCompile Include="graphicsmanager.cpp" />
+    <ClCompile Include="imageClass.cpp" />
     <ClCompile Include="inputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shader2DClass.cpp" />
+    <ClCompile Include="shader3DClass.cpp" />
     <ClCompile Include="systemClass.cpp" />
     <ClCompile Include="introScreenState.cpp" />
+    <ClCompile Include="textureClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationManager.h" />
     <ClInclude Include="applicationState.h" />
+    <ClInclude Include="cameraClass.h" />
+    <ClInclude Include="firstScreenState.h" />
     <ClInclude Include="graphicsManager.h" />
+    <ClInclude Include="imageClass.h" />
     <ClInclude Include="inputManager.h" />
     <ClInclude Include="listenerClass.h" />
     <ClInclude Include="notifierClass.h" />
+    <ClInclude Include="shader2DClass.h" />
+    <ClInclude Include="shader3DClass.h" />
     <ClInclude Include="systemClass.h" />
     <ClInclude Include="introScreenState.h" />
+    <ClInclude Include="textureClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,20 +3,30 @@
 
 #include "applicationManager.h"
 
+#include "inputManager.h"
+#include "graphicsManager.h"
+
+#include "cameraClass.h"
+#include "imageClass.h"
+
 #include <string>
 
-class ApplicationState
+class ApplicationState : public Listener<InputManager, int>
 {
 	public:
 		ApplicationState();
 		virtual ~ApplicationState();
 
-		virtual bool setup(ApplicationManager* appManager, HWND windowHandler) = 0;
-		virtual void update(ApplicationManager* appManager, float elapsedTime) = 0;
-		virtual void draw(ApplicationManager* appManager) = 0;
+		virtual bool setup(ApplicationManager* appManager, GraphicsManager* graphicsManager, InputManager * inputManager, HWND windowHandler) = 0;
+		virtual void update(float elapsedTime) = 0;
+		virtual void draw() = 0;
 		virtual void destroy() = 0;
 
-		void changeState(ApplicationManager* appManager, ApplicationState* appState);
+		void changeState(ApplicationState* appState);
+
+	protected:
+		ApplicationManager* appManager_;
+		GraphicsManager* graphicsManager_;
 };
 
 #endif

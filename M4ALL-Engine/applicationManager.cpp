@@ -14,9 +14,11 @@ ApplicationManager::~ApplicationManager()
 
 }
 
-bool ApplicationManager::setup(HWND windowsHandler, int width, int height, bool fullscreen)
+bool ApplicationManager::setup(HWND windowsHandler, InputManager* inputManager, int width, int height, bool fullscreen)
 {
 	windowHandler_ = windowsHandler;
+
+	inputManager_ = inputManager;
 
 	graphicsManager_ = new GraphicsManager;
 	if(!graphicsManager_)
@@ -42,7 +44,7 @@ void ApplicationManager::update()
 {
 
 	// we update the State with the frame elapsed time
-	appState_->update(this, 0);
+	appState_->update(0);
 }
 
 void ApplicationManager::draw()
@@ -50,14 +52,17 @@ void ApplicationManager::draw()
 	graphicsManager_->beginDraw(1.0f, 0.5f, 0.0f, 1.0f);
 
 	// We call the draw function of the active state
-	appState_->draw(this);
+	appState_->draw();
 
 	graphicsManager_->endDraw();
 }
 
 void ApplicationManager::destroy()
 {
-	appState_->destroy();
+	if(appState_)
+	{
+		appState_->destroy();
+	}
 
 	if(graphicsManager_)
 	{
@@ -70,8 +75,9 @@ void ApplicationManager::destroy()
 bool ApplicationManager::changeState(ApplicationState* appState)
 {
 	if (appState != appState_) {
+		inputManager_->RemoveListener((*appState_));
 		appState_ = appState;
-		return appState_->setup(this, windowHandler_);
+		return appState_->setup(this, graphicsManager_, inputManager_, windowHandler_);
 	}
 
 	return true;

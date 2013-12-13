@@ -1,0 +1,8 @@
+<ipa>
+	<anim name="idle2"/>
+	<anim name="idle"/>
+	<anim name="impact"/>
+	<anim name="impact2"/>
+	<anim name="ipa_impact_front1"/>
+	<anim name="ipa_impact_front2"/>
+</ipa>

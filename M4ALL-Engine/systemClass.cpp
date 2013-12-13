@@ -73,7 +73,7 @@ bool SystemClass::setup(int width, int height)
 
 		if(ChangeDisplaySettings(&deviceModeSettings_, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) { 
 			// Setting device mode for full screen has failed, switch to windowed
-			MessageBox(NULL, L"Display mode failed", L"Error", MB_ICONERROR | MB_OK);
+			MessageBoxA(NULL, "Display mode failed.", "Error", MB_ICONERROR | MB_OK);
 			fullscreen_ = false;
 		}
 		// ChangeDisplaySettings(0, 0) -> for back to normal windowed screen
@@ -136,7 +136,7 @@ bool SystemClass::setup(int width, int height)
 	{
 		return false;
 	}
-	if(!appManager_->setup(windowHandler_, width, height, fullscreen_))
+	if(!appManager_->setup(windowHandler_, inputManager_, width, height, fullscreen_))
 	{
 		return false;
 	}
@@ -167,6 +167,13 @@ void SystemClass::run()
 
 void SystemClass::destroy()
 {
+	if(appManager_)
+	{
+		appManager_->destroy();
+		delete appManager_;
+		appManager_ = 0;
+	}
+
 	if(inputManager_)
 	{
 		delete inputManager_;
@@ -193,25 +200,20 @@ void SystemClass::destroy()
 
 void SystemClass::Notify(InputManager* notifier, int arg)
 {
-		switch(arg){
-			case 27:
+	switch(arg){
+		case 27:
 			{
-				if(MessageBox(windowHandler_, (LPCWSTR)L"Really quit?", (LPCWSTR)L"My application", MB_OKCANCEL) == IDOK)
+				if(MessageBoxA(windowHandler_, "Really quit?", "My application", MB_OKCANCEL) == IDOK)
 				{
 					isRunning_ = false;
 				}
 				inputManager_->keyUp(arg);
 			}
 			break;
-			default:
-			{
-				std::stringstream keyStream;
-				keyStream << "Key pressed " << arg << " has no behaviour attached";
-				MessageBoxA(NULL, keyStream.str().c_str(), "SystemClass", MB_OK);
-			}
+		default:
 			break;
-		}
 	}
+}
 
 void SystemClass::processEvents()
 {
@@ -334,23 +336,23 @@ LRESULT SystemClass::StaticWindowProcess(HWND windowHandler, UINT messageCode, W
     switch(messageCode)
 	{
 		case WM_CREATE:
-		{
-			//Get the pointer we stored during create
-			window = (SystemClass*)((LPCREATESTRUCT)lAdditionalData)->lpCreateParams;
+			{
+				//Get the pointer we stored during create
+				window = (SystemClass*)((LPCREATESTRUCT)lAdditionalData)->lpCreateParams;
 
-			//Associate the window pointer with the hwnd for the other events to access
-			SetWindowLongPtr(windowHandler, GWL_USERDATA, (LONG_PTR)window);
-		}
-		break;
+				//Associate the window pointer with the hwnd for the other events to access
+				SetWindowLongPtr(windowHandler, GWL_USERDATA, (LONG_PTR)window);
+			}
+			break;
 		default:
-		{
-			//If this is not a creation event, then we should have stored a pointer to the window
-			window = (SystemClass*)GetWindowLongPtr(windowHandler, GWL_USERDATA);
+			{
+				//If this is not a creation event, then we should have stored a pointer to the window
+				window = (SystemClass*)GetWindowLongPtr(windowHandler, GWL_USERDATA);
 
-			if(!window) 
-				return DefWindowProc(windowHandler, messageCode, wAdditionalData, lAdditionalData);    
-		}
-		break;
+				if(!window) 
+					return DefWindowProc(windowHandler, messageCode, wAdditionalData, lAdditionalData);    
+			}
+			break;
 	}
 
     //Call our window's member WndProc (allows us to access member variables)

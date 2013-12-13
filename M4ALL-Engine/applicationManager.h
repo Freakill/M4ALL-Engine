@@ -5,6 +5,8 @@
 
 #include "graphicsManager.h"
 
+#include "inputManager.h"
+
 class ApplicationState;
 
 class ApplicationManager
@@ -13,7 +15,7 @@ class ApplicationManager
 		ApplicationManager();
 		virtual ~ApplicationManager();
 
-		bool setup(HWND windowsHandler, int width, int height, bool fullscreen);
+		bool setup(HWND windowsHandler, InputManager* inputManager, int width, int height, bool fullscreen);
 		void update();
 		void draw();
 		void destroy();
@@ -23,6 +25,7 @@ class ApplicationManager
 	private:
 		ApplicationState* appState_;
 
+		InputManager* inputManager_;
 		GraphicsManager* graphicsManager_;
 
 		HWND windowHandler_;

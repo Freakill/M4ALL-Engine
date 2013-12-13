@@ -4,7 +4,7 @@
 
 ApplicationState::ApplicationState()
 {
-
+	appManager_ = 0;
 }
 
 ApplicationState::~ApplicationState()
@@ -12,9 +12,12 @@ ApplicationState::~ApplicationState()
 
 }
 
-void ApplicationState::changeState(ApplicationManager* appManager, ApplicationState* appState)
+void ApplicationState::changeState(ApplicationState* appState)
 {
-	appManager->changeState(appState);
+	if(appManager_)
+	{
+		appManager_->changeState(appState);
+	}
 }
 
 

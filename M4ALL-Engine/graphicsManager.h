@@ -20,63 +20,77 @@
 #include <fstream>
 #include <sstream>
 
+#include "shader3DClass.h"
+#include "shader2DClass.h"
+
 class GraphicsManager
 {
-public:
-	GraphicsManager();
-	GraphicsManager(const GraphicsManager&);
-	~GraphicsManager();
+	public:
+		GraphicsManager();
+		GraphicsManager(const GraphicsManager&);
+		~GraphicsManager();
 
-	bool setup(int width, int height, bool vsync, HWND windowHandler, bool fullscreen, float screenDepthPlane, float screenNearPlane);
-	void destroy();
+		bool setup(int width, int height, bool vsync, HWND windowHandler, bool fullscreen, float screenDepthPlane, float screenNearPlane);
+		void destroy();
+
+		bool setupShaders(HWND windowHandler);
 	
-	void beginDraw(float red, float green, float blue, float alpha);
-	void endDraw();
+		void draw2D(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX orthoMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 color);
+		void draw3D();
 
-#if defined(OPENGL)
+		void beginDraw(float red, float green, float blue, float alpha);
+		void endDraw();
 
-#else
-	ID3D11Device* getDevice();
-	ID3D11DeviceContext* getDeviceContext();
-	IDXGISwapChain* getSwapChain();
+	#if defined(OPENGL)
 
-	void getProjectionMatrix(D3DXMATRIX& projectionMatrix);
-	void getWorldMatrix(D3DXMATRIX& worldMatrix);
-	void getOrthoMatrix(D3DXMATRIX& orthoMatrix);
-#endif
+	#else
+		ID3D11Device* getDevice();
+		ID3D11DeviceContext* getDeviceContext();
+		IDXGISwapChain* getSwapChain();
 
-	void getVideoCardInfo(char* cardName, int& memory);
+		void getProjectionMatrix(D3DXMATRIX& projectionMatrix);
+		void getWorldMatrix(D3DXMATRIX& worldMatrix);
+		void getOrthoMatrix(D3DXMATRIX& orthoMatrix);
+	#endif
 
-	void turnZBufferOn();
-	void turnZBufferOff();
+		void getVideoCardInfo(char* cardName, int& memory);
 
-	void turnOnAlphaBlending();
-	void turnOffAlphaBlending();
+		void turnZBufferOn();
+		void turnZBufferOff();
 
-private:
-	bool vsyncEnabled_;
-	int videoCardMemory_;
-	char videoCardDescription_[128];
+		void turnOnAlphaBlending();
+		void turnOffAlphaBlending();
 
-#if defined(OPENGL)
+	private:
+		bool vsyncEnabled_;
+		int videoCardMemory_;
+		char videoCardDescription_[128];
 
-#else
-	IDXGISwapChain* swapChain_;
-	ID3D11Device* dx11Device_;
-	ID3D11DeviceContext* dx11DeviceContext_;
-	ID3D11RenderTargetView* renderTargetView_;
-	ID3D11Texture2D* depthStencilBuffer_;
-	ID3D11DepthStencilState* depthStencilState_;
-	ID3D11DepthStencilView* depthStencilView_;
-	ID3D11RasterizerState* rasterState_;
-	ID3D11DepthStencilState* depthDisabledStencilState_;
-	ID3D11BlendState* alphaEnableBlendingState_;
-	ID3D11BlendState* alphaDisableBlendingState_;
+		// Pointer to all the variables, interfaces and structures to manage the rendering
+	#if defined(OPENGL)
 
-	D3DXMATRIX projectionMatrix_;
-	D3DXMATRIX worldMatrix_;
-	D3DXMATRIX orthoMatrix_;
-#endif
+	#else
+		IDXGISwapChain* swapChain_;
+		ID3D11Device* dx11Device_;
+		ID3D11DeviceContext* dx11DeviceContext_;
+		ID3D11RenderTargetView* renderTargetView_;
+		ID3D11Texture2D* depthStencilBuffer_;
+		ID3D11DepthStencilState* depthStencilState_;
+		ID3D11DepthStencilView* depthStencilView_;
+		ID3D11RasterizerState* rasterState_;
+		ID3D11DepthStencilState* depthDisabledStencilState_;
+		ID3D11BlendState* alphaEnableBlendingState_;
+		ID3D11BlendState* alphaDisableBlendingState_;
+
+		D3DXMATRIX projectionMatrix_;
+		D3DXMATRIX worldMatrix_;
+		D3DXMATRIX orthoMatrix_;
+	#endif
+
+		// Pointers to shaders
+		Shader2DClass* shader2D_;
+		Shader3DClass* shader3D_;
+
 };
 
 #endif
